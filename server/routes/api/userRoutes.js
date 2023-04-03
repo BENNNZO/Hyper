@@ -1,5 +1,18 @@
 const router = require('express').Router();
-const { getUsers, createUser, findUser, deleteUser, editUser, findUsersFriends, requestUserFriends, acceptFriendRequest, rejectFriendRequest } = require('../../controllers/userContoller')
+const { 
+    getUsers, 
+    createUser, 
+    findUser, 
+    deleteUser, 
+    editUser, 
+    findUsersFriends, 
+    requestUserFriends, 
+    acceptFriendRequest, 
+    rejectFriendRequest, 
+    getFriendDM, 
+    sendFriendDM,
+    deleteFriendDM
+} = require('../../controllers/userContoller')
 
 /* ------------------------------- USER ROUTES ------------------------------ */
 
@@ -16,14 +29,15 @@ router.route('/:id')
 
 router.route('/friends/:id')
     .get(findUsersFriends)
-
-router.route('/friends/request/:id')
     .post(requestUserFriends)
+    .put(acceptFriendRequest)
+    .delete(rejectFriendRequest)
 
-router.route('/friends/request/accept/:id')
-    .post(acceptFriendRequest)
+/* ------------------------------- CHAT ROUTES ------------------------------ */
 
-router.route('/friends/request/reject/:id')
-    .post(rejectFriendRequest)
+router.route('/dm/:id')
+    .get(getFriendDM)
+    .post(sendFriendDM)
+    .delete(deleteFriendDM)
 
 module.exports = router

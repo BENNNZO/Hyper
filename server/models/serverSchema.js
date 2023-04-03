@@ -1,26 +1,8 @@
-const User = require('./userSchema')
 const mongoose = require('mongoose')
-
-const channelSchema = new mongoose.Schema (
-    {
-        channelName: {
-            type: String,
-            maxlength: 20,
-            require: true
-        },
-        voice: {
-            type: Boolean,
-            require: true
-        }
-    }
-)
 
 const chatSchema = new mongoose.Schema (
     {
-        user: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        },
+        chatter: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
         text: {
             type: String,
             maxlength: 200,
@@ -33,17 +15,44 @@ const chatSchema = new mongoose.Schema (
     }
 )
 
-const serverSchema = new mongoose.Schema (
+const voiceChannelSchema = new mongoose.Schema (
     {
-        serverName: {
+        channelName: {
             type: String,
-            maxlength: 20
+            maxlength: 20,
+            require: true
+        }
+    }
+)
+
+const textChannelSchema = new mongoose.Schema (
+    {
+        channelName: {
+            type: String,
+            maxlength: 20,
+            require: true
         },
-        channels: [channelSchema],
         chats: [chatSchema]
     }
 )
 
-const Server = mongoose.model('Server', serverSchema)
+const serverSchema = new mongoose.Schema (
+    {
+        serverName: {
+            type: String,
+            require: true,
+            maxlength: 20
+        },
+        joinedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Users' }],
+        voiceChannels: [voiceChannelSchema],
+        textChannels: [textChannelSchema]
+        // textChannels: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TextChannel' }]
+    }
+)
 
-module.exports = Server
+const Server = mongoose.model('Server', serverSchema)
+const TextChannel = mongoose.model('TextChannel', textChannelSchema)
+const VoiceChannel = mongoose.model('VoiceChannel', voiceChannelSchema)
+const Chats = mongoose.model('Chats', chatSchema)
+
+module.exports = { Server, TextChannel, VoiceChannel, Chats }

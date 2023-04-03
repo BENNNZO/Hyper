@@ -1,4 +1,5 @@
-const { User, Friend } = require('../models')
+const bcrypt = require('bcrypt')
+const { User, Friend, Chat } = require('../models')
 
 module.exports = {
 
@@ -8,6 +9,7 @@ module.exports = {
         User.find()
             .populate({ path: 'friends', populate: { path: 'requester', select: 'username' }})
             .populate({ path: 'friends', populate: { path: 'recipient', select: 'username' }})
+            .populate({ path: 'friends', populate: { path: 'chats' }})
             .then(users => res.json(users))
             .catch(err => res.json(err))
     },
@@ -24,7 +26,12 @@ module.exports = {
             .catch(err => res.json(err))
     },
     createUser(req, res) {
-        User.create(req.body)
+        const hashedPass = bcrypt.hashSync(req.body.password, 10);
+        User.create({
+            username: req.body.username,
+            email: req.body.email,
+            password: hashedPass
+        })
             .then(data => res.json(data))
             .catch(err => res.json(err))
     },
@@ -45,56 +52,75 @@ module.exports = {
     },
     async requestUserFriends(req, res) {
         const headers = []
-        Friend.findOneAndUpdate(
-            { requester: req.params.id, recipient: req.body.recipient }, 
-            { $set: { status: 1 }}, 
-            { upsert: true, new: true }
-        ).then(data => {
-            User.updateOne(
-                { _id: req.params.id },
-                { $push: { friends: data._id }}
-            ).then(data => headers.push(data))
-        })
-        Friend.findOneAndUpdate(
-            { requester: req.body.recipient, recipient: req.params.id },
-            { $set: { status: 2 }},
-            { upsert: true, new: true }
-        ).then(data => {
-            User.updateOne(
-                { _id: req.body.recipient },
-                { $push: { friends: data._id }}
-            ).then(data => headers.push(data))
-        })
+            Friend.findOneAndUpdate(
+                { requester: req.params.id, recipient: req.body.recipient },
+                { $setOnInsert: { status: 1 }}, 
+                { upsert: true, new: true, overwrite: false }
+            ).then(data => {
+                User.findOneAndUpdate(
+                    { _id: req.params.id, friends: { $nin: data._id }},
+                    { $push: { friends: data._id }} 
+                ).then(data => headers.push(data))
+            })
+            Friend.findOneAndUpdate(
+                { requester: req.body.recipient, recipient: req.params.id },
+                { $setOnInsert: { status: 2 }},
+                { upsert: true, new:true, overwrite: true }
+            ).then(data => {
+                User.findOneAndUpdate(
+                    { _id: req.body.recipient, friends: { $nin: data._id }},
+                    { $push: { friends: data._id }}
+                ).then(data => headers.push(data))
+            })
         res.json(headers)
     },
     acceptFriendRequest(req, res) {
-        const headers = []
-        Friend.findOneAndUpdate(
-            { requester: req.params.id, recipient: req.body.recipient }, 
+        Friend.updateMany(
+            { $or: [{ requester: req.params.id, recipient: req.body.recipient }, { recipient: req.params.id, requester: req.body.recipient }] }, 
             { $set: { status: 3 }}
-        ).then(data => headers.push(data))
-        Friend.findOneAndUpdate(
-            { requester: req.body.recipient, recipient: req.params.id }, 
-            { $set: { status: 3 }}
-        ).then(data => headers.push(data))
-        res.json(headers)
+        ).then(data => res.json(data))
+        .catch(err => res.json(err))
     },
     rejectFriendRequest(req, res) {
         const headers = []
-        Friend.deleteOne({ requester: req.params.id, recipient: req.body.recipient })
-            .then(data => {
-                User.updateOne(
+        Friend.findOneAndDelete(
+            { requester: req.params.id, recipient: req.body.recipient }
+            ).then(data => {
+                if (data) User.updateOne(
                     { _id: req.params.id },
                     { $pull: { friends: data._id }}
                 ).then(data => headers.push(data))
             })
-        Friend.deleteOne({ requester: req.body.recipient, recipient: req.params.id })
-            .then(data => {
-                User.updateOne(
+        Friend.findOneAndDelete(
+            { requester: req.body.recipient, recipient: req.params.id }
+            ).then(data => {
+                if (data) User.updateOne(
                     { _id: req.body.recipient },
                     { $pull: { friends: data._id }}
                 ).then(data => headers.push(data))
             })
         res.json(headers)
+    },
+
+    /* ------------------------------ FRIEND CHATS ------------------------------ */
+
+    getFriendDM(req, res) {
+        Friend.findById(req.params.id, 'chats')
+            .then(data => res.json(data))
+            .catch(err => res.json(err))
+    },
+    sendFriendDM(req, res) {
+        Friend.updateMany(
+            { $or: [{ requester: req.params.id, recipient: req.body.recipient }, { recipient: req.params.id, requester: req.body.recipient }], status: 3 }, 
+            { $push: { chats: { chatter: req.params.id, text: req.body.text }}}            
+        ).then(data => res.json(data))
+        .catch(err => res.json(err))
+    },
+    deleteFriendDM(req, res) {
+        Friend.updateMany(
+            { $or: [{ requester: req.params.id, recipient: req.body.recipient }, { recipient: req.params.id, requester: req.body.recipient }], status: 3 },
+            { $pull: { chats: { _id: req.body.chatId }}}  
+        ).then(data => res.json(data))
+        .catch(err => res.json(err))
     }
 }

@@ -1,13 +1,18 @@
 const mongoose = require('mongoose')
 
-// const chatSchema = new mongoose.Schema(
-//     {
-//         chatter: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-//         text: {
-//             type: String
-//         }
-//     }
-// )
+const chatSchema = new mongoose.Schema(
+    {
+        chatter: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+        text: {
+            type: String
+        },
+        creationDate: {
+            type: Date,
+            immutable: true,
+            default: () => Date.now()
+        },
+    }
+)
 
 const friendSchema = new mongoose.Schema(
     {
@@ -17,7 +22,8 @@ const friendSchema = new mongoose.Schema(
             type: Number,
             enums: [0, 1, 2, 3] // 0: add friend, 1: requested, 2: pending, 3: friends 
         },
-        // chats: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Chat' }]
+        chats: [chatSchema]
+        // chats: [{ type: String, ref: 'Chat' }]
     }
 )
 

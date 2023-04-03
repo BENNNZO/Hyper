@@ -21,34 +21,34 @@ const userData = [
     }
 ]
 
-const serverData = [
-    {
-        serverName: 'new server name',
-        channels: [
-            {
-                channelName: 'new channel',
-                voice: false
-            },
-            {
-                channelName: 'voice channel',
-                voice: true
-            }
-        ],
-        chats : [
-            {
-                user: '642450e5d4714e14409c45da',
-                text: 'yay new chat text'
-            },
-            {
-                user: '642450dd44cc16c722277b1f',
-                text: 'raw text test'
-            },
-            {
-                user: '642450eb009346a24bdc6e1e',
-                text: '123091283012938'
-            }
-        ]
-    }    
-]
+// const serverData = [
+//     {
+//         serverName: 'new server name',
+//         channels: [
+//             {
+//                 channelName: 'new channel',
+//                 voice: false
+//             },
+//             {
+//                 channelName: 'voice channel',
+//                 voice: true
+//             }
+//         ],
+//         chats : [
+//             {
+//                 user: '642450e5d4714e14409c45da',
+//                 text: 'yay new chat text'
+//             },
+//             {
+//                 user: '642450dd44cc16c722277b1f',
+//                 text: 'raw text test'
+//             },
+//             {
+//                 user: '642450eb009346a24bdc6e1e',
+//                 text: '123091283012938'
+//             }
+//         ]
+//     }    
+// ]
 
-module.exports = { userData, serverData }
+module.exports = { userData }
