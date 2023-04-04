@@ -1,5 +1,8 @@
+require('dotenv').config()
+
+const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt')
-const { User, Friend, Chat } = require('../models')
+const { User, Friend } = require('../models')
 
 module.exports = {
 
@@ -20,13 +23,41 @@ module.exports = {
             .then(user => res.json(user))
             .catch(err => res.json(err))
     },
+    async loginUser(req, res) {
+        const userCheck = await User.exists({ email: req.body.email })
+        if (userCheck) {
+            const userData = await User.findOne({ email: req.body.email })
+            bcrypt.compare(req.body.password, userData.password)
+                .then(data => {
+                    if (data) {
+                        // const signedJWT = jwt.sign({ data: userData._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5h' })
+                        const signedJWT = jwt.sign({ data: userData._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
+                        res.cookie('_auth', signedJWT, { httpOnly: true })
+                        res.status(200).send()
+                    } else {
+                        res.send('p')
+                    }
+                })
+        } else {
+            res.send('e')
+        }
+    },
+    verifyUser(req, res) {
+        try { 
+            jwt.verify(req.cookies._auth, process.env.ACCESS_TOKEN_SECRET)
+            res.send(true)
+        }
+        catch {
+            res.send(false)
+        }
+    },
     editUser(req, res) {
         User.updateOne({ _id: req.params.id }, { $set: req.body })
             .then(data => res.json(data))
             .catch(err => res.json(err))
     },
-    createUser(req, res) {
-        const hashedPass = bcrypt.hashSync(req.body.password, 10);
+    async createUser(req, res) {
+        const hashedPass = await bcrypt.hash(req.body.password, 10);
         User.create({
             username: req.body.username,
             email: req.body.email,

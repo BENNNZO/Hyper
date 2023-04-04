@@ -11,7 +11,9 @@ const {
     rejectFriendRequest, 
     getFriendDM, 
     sendFriendDM,
-    deleteFriendDM
+    deleteFriendDM,
+    loginUser,
+    verifyUser
 } = require('../../controllers/userContoller')
 
 /* ------------------------------- USER ROUTES ------------------------------ */
@@ -19,6 +21,12 @@ const {
 router.route('/')
     .get(getUsers)
     .post(createUser)
+
+router.route('/login')
+    .post(loginUser)
+
+router.route('/verify')
+    .get(verifyUser)
 
 router.route('/:id')
     .get(findUser)
