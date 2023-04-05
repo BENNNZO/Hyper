@@ -17,7 +17,7 @@ module.exports = {
             .catch(err => res.json(err))
     },
     findUser(req, res) {
-        User.find({ _id: req.params.id })
+        User.findOne({ _id: req.params.id }, '-password -_id -__v -joinDate')
             .populate({ path: 'friends', populate: { path: 'requester', select: 'username' }})
             .populate({ path: 'friends', populate: { path: 'recipient', select: 'username' }})
             .then(user => res.json(user))
@@ -44,7 +44,8 @@ module.exports = {
     },
     verifyUser(req, res) {
         try { 
-            jwt.verify(req.cookies._auth, process.env.ACCESS_TOKEN_SECRET)
+            const id = jwt.verify(req.cookies._auth, process.env.ACCESS_TOKEN_SECRET)
+            res.cookie('id', id.data)
             res.send(true)
         }
         catch {
