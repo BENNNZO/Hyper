@@ -1,4 +1,4 @@
-const { Server, TextChannel, User } = require('../models')
+const { Server, User } = require('../models')
 
 module.exports = {
     getAllServers(req, res) {
@@ -8,7 +8,7 @@ module.exports = {
     },
     createServer(req, res) {
         Server.create({
-            name: req.body.serverName,
+            serverName: req.body.serverName,
             joinedUsers: req.params.id,
             voiceChannels: {
                 channelName: 'default'

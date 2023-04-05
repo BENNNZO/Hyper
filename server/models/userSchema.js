@@ -56,7 +56,7 @@ const userSchema = new mongoose.Schema(
             maxlength: 150
         },
         joinedServers: {
-            type: Array
+            type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Server' }]
         },
         friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Friend' }]
     }

@@ -20,6 +20,7 @@ module.exports = {
         User.findOne({ _id: req.params.id }, '-password -_id -__v -joinDate')
             .populate({ path: 'friends', populate: { path: 'requester', select: 'username' }})
             .populate({ path: 'friends', populate: { path: 'recipient', select: 'username' }})
+            .populate('joinedServers')
             .then(user => res.json(user))
             .catch(err => res.json(err))
     },
