@@ -6,6 +6,12 @@ module.exports = {
             .then(data => res.json(data))
             .catch(err => res.json(err))
     },
+    findServer(req, res) {
+        Server.findOne({ _id: req.params.id })
+            .populate({ path: 'joinedUsers', model: 'User' })
+            .then(data => res.json(data))
+            .catch(err => res.json(err))
+    },
     createServer(req, res) {
         Server.create({
             serverName: req.body.serverName,

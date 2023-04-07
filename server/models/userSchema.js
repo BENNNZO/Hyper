@@ -55,9 +55,7 @@ const userSchema = new mongoose.Schema(
             type: String,
             maxlength: 150
         },
-        joinedServers: {
-            type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Server' }]
-        },
+        joinedServers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Server' }],
         friends: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Friend' }]
     }
 )

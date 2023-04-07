@@ -1,6 +1,7 @@
 const router = require('express').Router()
 const { 
     getAllServers,
+    findServer,
     createServer,
     chatServer,
     newTextChannel,
@@ -14,7 +15,7 @@ router.route('/')
     .get(getAllServers)
 
 router.route('/:id')
-    .get(chatServer)
+    .get(findServer)
     .post(createServer)
 
 router.route('/text')
