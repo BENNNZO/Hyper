@@ -1,8 +1,8 @@
-const express = require('express')
+const cookieParser = require('cookie-parser')
 const db = require('./config/connection')
+const express = require('express')
 const routes = require('./routes')
 const cors = require('cors')
-const cookieParser = require('cookie-parser')
 
 const PORT = process.env.PORT || 3001
 const app = express()

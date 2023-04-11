@@ -51,7 +51,7 @@ module.exports = {
         Server.findOneAndUpdate(
             { _id: req.body.serverId },
             { $push: { voiceChannels: { channelName: req.body.channelName }}},
-            { new: true }
+            { upsert: true, new: true }
         ).then(data => res.json(data))
         .catch(err => res.json(err))
     },
@@ -66,7 +66,7 @@ module.exports = {
     chatServer(req, res) {
         Server.findOneAndUpdate(
             { _id: req.body.serverId, 'textChannels._id': req.body.textChannelId },
-            { $push: { 'textChannels.$.chats': { chatter: req.params.id, text: req.body.text }}},
+            { $push: { 'textChannels.$.chats': { chatter: req.body.userId, text: req.body.text }}},
             { new: true }
         ).then(data => res.json(data))
         .catch(err => res.json(err))
@@ -77,6 +77,14 @@ module.exports = {
             { $pull: { 'textChannels.$.chats': { _id: req.body.chatId }}},
             { new: true }
         ).then(data => res.json(data))
+        .catch(err => res.json(err))
+    },
+    retrieveChat(req, res) {
+        Server.findOne(
+            { _id: req.body.serverId },
+            { 'textChannels': { $elemMatch: { _id: req.body.textChannelId }}}
+        ).populate({ path: 'textChannels.chats.chatter', model: 'User' })
+        .then(data => res.json(data))
         .catch(err => res.json(err))
     }
 }
