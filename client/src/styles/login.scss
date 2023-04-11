@@ -1,0 +1,60 @@
+.wrapper-login {
+    height: 100vh;
+    background: rgb(11,134,114);
+    background: linear-gradient(45deg, rgba(11,134,114,1) 0%, rgba(73,255,164,1) 100%);
+    form {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-content: space-between;
+        gap: 5px;
+        padding: 30px;
+        border-radius: 10px;
+        font-size: 2rem;
+        font-weight: 700;
+        width: 300px;
+        height: auto;
+    }
+    h1 {
+        padding-bottom: 25px;
+        text-align: center;
+        font-size: 1.5rem;
+        opacity: 0.7;
+    }
+    input {
+        padding: 15px;
+        filter: drop-shadow(0 0 15px rgba(0, 0, 0, 0.2));
+        margin-bottom: 25px;
+        border-radius: 15px;
+        border: none;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    button {
+        padding: 10px;
+        width: 50%;
+        border-radius: 15px;
+        border: none;
+        filter: drop-shadow(0 0 10px rgba(0, 170, 136, 0.3));
+        margin: 0 auto;
+        cursor: pointer;
+        color: white;
+        font-size: 0.9rem;
+        font-weight: 600;
+        background: linear-gradient(255deg, rgb(25, 217, 143) 0%, rgb(65, 221, 143) 100%);
+        margin-bottom: 15px;
+    }
+    .signup {
+        display: flex;
+        flex-direction: row;
+        font-size: 0.75rem;
+        gap: 10px;
+        color: rgba(128, 128, 128, 0.698);
+        margin: 0 auto;
+    }
+}

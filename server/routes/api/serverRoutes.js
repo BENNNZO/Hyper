@@ -29,7 +29,7 @@ router.route('/voice')
 router.route('/chat')
     .post(chatServer)
     .delete(delServerChat)
-    
+
 router.route('/:id')
     .get(findServer)
     .post(createServer)
