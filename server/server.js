@@ -2,15 +2,16 @@ const cookieParser = require('cookie-parser')
 const db = require('./config/connection')
 const express = require('express')
 const routes = require('./routes')
-const cors = require('cors')
+// const cors = require('cors')
 
 const PORT = process.env.PORT || 3001
 const app = express()
 
-app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true
-}))
+app.use(express.static('public'))
+// app.use(cors({
+//     origin: 'http://localhost:3000',
+//     credentials: true
+// }))
 app.use(cookieParser())
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
