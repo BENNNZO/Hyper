@@ -1,4 +1,7 @@
+require("dotenv").config();
 const { Server, User } = require('../models')
+const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
+const axios = require('../utils/Axios')
 
 module.exports = {
     getAllServers(req, res) {
@@ -13,23 +16,27 @@ module.exports = {
             .catch(err => res.json(err))
     },
     createServer(req, res) {
-        Server.create({
-            serverName: req.body.serverName,
-            joinedUsers: req.params.id,
-            voiceChannels: {
-                channelName: 'default'
-            },
-            textChannels: {
-                channelName: 'default'
-            }
-        }).then(data => {
-            User.findOneAndUpdate(
-                { _id: req.params.id },
-                { $push: { joinedServers: data._id }},
-                { new: true }
-            ).then(userData => res.json({data, userData}))
-            .catch(err => res.json(err))
-        }).catch(err => res.json(err))
+        axios.post('/meeting/create-meeting', { token: req.cookies.authToken })
+            .then(response => {
+                Server.create({
+                    serverName: req.body.serverName,
+                    joinedUsers: req.params.id,
+                    voiceChannels: {
+                        channelName: 'default',
+                        roomId: response.data.meetingId
+                    },
+                    textChannels: {
+                        channelName: 'default'
+                    }
+                }).then(data => {
+                    User.findOneAndUpdate(
+                        { _id: req.params.id },
+                        { $push: { joinedServers: data._id }},
+                        { new: true }
+                    ).then(userData => res.json({data, userData}))
+                    .catch(err => res.json(err))
+                }).catch(err => res.json(err))
+            })
     },
     newTextChannel(req, res) {
         Server.findOneAndUpdate(
@@ -48,12 +55,15 @@ module.exports = {
         .catch(err => res.json(err))
     },
     newVoiceChannel(req, res) {
-        Server.findOneAndUpdate(
-            { _id: req.body.serverId },
-            { $push: { voiceChannels: { channelName: req.body.channelName }}},
-            { upsert: true, new: true }
-        ).then(data => res.json(data))
-        .catch(err => res.json(err))
+        axios.post('/meeting/create-meeting', { token: req.cookies.authToken })
+        .then(response => {
+            Server.findOneAndUpdate(
+                { _id: req.body.serverId },
+                { $push: { voiceChannels: { channelName: req.body.channelName, roomId: response.data.meetingId }}},
+                { upsert: true, new: true }
+            ).then(data => res.json(data))
+            .catch(err => res.json(err))
+        })
     },
     delVoiceChannel(req, res) {
         Server.findOneAndUpdate(

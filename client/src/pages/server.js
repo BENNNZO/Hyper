@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Meeting from '../components/meeting'
 import axios from '../utils/Axios'
 import Cookies from 'js-cookie'
 import { useParams } from 'react-router-dom'
+import { MeetingProvider, useParticipant, useMeeting } from "@videosdk.live/react-sdk";
 
 import plusIcon from '../assets/svg/plus-icon.svg'
 import arrowIcon from '../assets/svg/arrow-forward.svg'
@@ -10,28 +10,35 @@ import volumeIcon from '../assets/svg/volume-max-icon.svg'
 import chatIcon from '../assets/svg/5.svg'
 
 export default function Server() {
+    let token = Cookies.get('authToken')
 
     let { serverId } = useParams()
 
     let chatRef = useRef()
-    let voiceRef = useRef()
     let textRef = useRef()
+    let voiceRef = useRef()
+    let chatAreaRef = useRef()
 
-    const [currentServer, setCurrentServer] = useState({})
+    const [currentUser, setCurrentUser] = useState({})
     const [currentChats, setCurrentChats] = useState([])
+    const [currentServer, setCurrentServer] = useState({})
     const [activeTextChannel, setActiveTextChannel] = useState('')
     const [activeVoiceChannel, setActiveVoiceChannel] = useState('')
     const [createText, setCreateText] = useState(false)
     const [createVoice, setCreateVoice] = useState(false)
-
-    const [authToken, setAuthToken] = useState('')
+    const [joined, setJoined] = useState(false)
+    const [localMic, setLocalMic] = useState(true)
+    const [localWebcam, setLocalWebcam] = useState(false)
 
     useEffect(() => {
         axios.get(`/server/${serverId}`)
             .then(res => {
                 setCurrentServer(res.data)
+                console.log(res.data)
                 res.data.textChannels[0]._id !== undefined ? setActiveTextChannel(res.data.textChannels[0]._id) : setActiveTextChannel('')
             })
+        axios.get(`/users/${Cookies.get('id')}`)
+            .then(res => setCurrentUser(res.data.username))
         updateChats()
     }, [serverId])
 
@@ -42,7 +49,7 @@ export default function Server() {
         //     console.log(activeTextChannel)
         //     console.log('activeTextChannel')
         // }, 1000)
-        
+
         // return () => clearInterval(timer)
     }, [activeTextChannel])
 
@@ -59,14 +66,14 @@ export default function Server() {
             serverId: serverId,
             textChannelId: activeTextChannel
         })
-        .then(res => {
-            try {
-                setCurrentChats(res.data.textChannels[0].chats.reverse())
-            }
-            catch {
-                setCurrentChats([])
-            }
-        })
+            .then(res => {
+                try {
+                    setCurrentChats(res.data.textChannels[0].chats.reverse())
+                }
+                catch {
+                    setCurrentChats([])
+                }
+            })
     }
 
     function handleAddVoiceChannel(e) {
@@ -76,10 +83,10 @@ export default function Server() {
             serverId: serverId,
             channelName: voiceRef.current.value
         })
-        .then(() => {
-            voiceRef.current.value = ''
-            updateData()    
-        })
+            .then(() => {
+                voiceRef.current.value = ''
+                updateData()
+            })
     }
 
     function handleAddTextChannel(e) {
@@ -89,10 +96,10 @@ export default function Server() {
             serverId: serverId,
             channelName: textRef.current.value
         })
-        .then(() => {
-            textRef.current.value = ''
-            updateData()    
-        })
+            .then(() => {
+                textRef.current.value = ''
+                updateData()
+            })
     }
 
     function handleNewChat(e) {
@@ -103,10 +110,86 @@ export default function Server() {
             userId: Cookies.get('id'),
             text: chatRef.current.value
         })
-        .then(() => {
-            updateChats()
-            chatRef.current.value = ''
-        })
+            .then(() => {
+                updateChats()
+                chatRef.current.value = ''
+            })
+    }
+
+    const MeetingView = (props) => {
+        const { join, leave, toggleMic, toggleWebcam, participants } = useMeeting()
+        const meeting = useMeeting()
+        console.log(meeting)
+
+        return (
+            <>
+                <div className={`channel-button ${props.roomId === activeVoiceChannel ? 'active-channel' : ''}`} onClick={() => {
+                    if (joined === false) {
+                        join()
+                        setActiveVoiceChannel(props.roomId)
+                        setJoined(true)
+                    } else {
+                        console.log('already joined in a server')
+                    }
+                }}>
+                    <p>{props.roomId}</p>
+                    <h3><img src={volumeIcon} alt="voice channel icon" />{props.channelName}</h3>
+                </div>
+                <div className={`call-controls ${props.roomId === activeVoiceChannel ? 'joined-active' : ''}`} style={{ width: chatAreaRef.current.offsetWidth }}>
+                    <button onClick={() => {
+                        leave()
+                        setJoined(false)
+                        setLocalMic(true)
+                        setActiveVoiceChannel('')
+                    }}>LEAVE</button>
+                    <button onClick={() => {
+                        toggleMic()
+                        setLocalMic(!localMic)
+                    }}>MIC: {localMic ? 'On' : 'Off'}</button>
+                    <button onClick={() => {
+                        toggleWebcam()
+                        setLocalWebcam(!localWebcam)
+                    }}>WEBCAM: {localWebcam ? 'On' : 'Off'}</button>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)" }}>
+                        {[...participants.keys()].map((participantId, index) => (
+                            <ParticipantView key={index} participantId={participantId} />
+                        ))}
+                    </div>
+                </div>
+            </>
+        )
+    };
+
+    const ParticipantView = ({ participantId }) => {
+        const { displayName, micOn, webcamOn, webcamStream } = useParticipant(participantId)
+
+        const webcamRef = useRef(null)
+
+        useEffect(() => {
+            if (webcamRef.current) {
+                if (webcamOn && webcamStream) {
+                    const mediaStream = new MediaStream();
+                    mediaStream.addTrack(webcamStream.track);
+
+                    webcamRef.current.srcObject = mediaStream;
+                    webcamRef.current
+                        .play()
+                        .catch((error) =>
+                            console.error("videoElem.current.play() failed", error)
+                        );
+                } else {
+                    webcamRef.current.srcObject = null;
+                }
+            }
+        }, [webcamStream, webcamOn]);
+
+        return (
+            <div style={{ height: '300px', backgroundColor: '#C0C2C9', objectFit: 'cover' }}>
+                <p>{displayName}</p>
+                <video width={'100%'} height={'100%'} ref={webcamRef} autoPlay></video>
+                <p>Webcam:{webcamOn ? "On" : "Off"} Mic: {micOn ? "On" : "Off"}</p>
+            </div>
+        )
     }
 
     return (
@@ -138,8 +221,19 @@ export default function Server() {
                 <ul>
                     {currentServer.voiceChannels !== undefined && currentServer.voiceChannels.map(voiceChannel => {
                         return (
-                            <li key={voiceChannel._id} className={voiceChannel._id === activeVoiceChannel ? 'active-channel' : ''} onClick={() => setActiveVoiceChannel(voiceChannel._id)}>
-                                <h3><img src={volumeIcon} alt="voice channel icon" />{voiceChannel.channelName}</h3>
+                            <li key={voiceChannel._id}>
+                                <MeetingProvider
+                                    config={{
+                                        meetingId: voiceChannel.roomId,
+                                        name: currentUser,
+                                        micEnabled: true,
+                                        webcamEnabled: false,
+                                    }}
+                                    token={token}
+                                    joinWithoutInteraction={false}
+                                >
+                                    <MeetingView channelName={voiceChannel.channelName} roomId={voiceChannel.roomId} part={'serverList'} />
+                                </MeetingProvider>
                             </li>
                         )
                     })}
@@ -151,16 +245,18 @@ export default function Server() {
                 <ul>
                     {currentServer.textChannels !== undefined && currentServer.textChannels.map(textChannel => {
                         return (
-                            <li key={textChannel._id} className={textChannel._id === activeTextChannel ? 'active-channel' : ''} onClick={() => setActiveTextChannel(textChannel._id)}>
-                                <h3><img src={chatIcon} alt="text channel icon" />{textChannel.channelName}</h3>
+                            <li key={textChannel._id}>
+                                <div className={`channel-button ${textChannel._id === activeTextChannel ? 'active-channel' : ''}`} onClick={() => setActiveTextChannel(textChannel._id)}>
+                                    <h3><img src={chatIcon} alt="text channel icon" />{textChannel.channelName}</h3>
+                                </div>
                             </li>
                         )
                     })}
                 </ul>
             </div>
-            <div className='chat-area'>
+            <div className={`chat-area ${joined ? 'chat-area-joined' : ''}`} ref={chatAreaRef}>
+                {joined ? <span></span> : ''}
                 <ul className="chats">
-                    <Meeting />
                     {currentChats !== undefined && currentChats.map(chat => {
                         return (
                             <li key={chat._id}>
@@ -171,7 +267,7 @@ export default function Server() {
                     })}
                 </ul>
                 <form action="POST" onSubmit={handleNewChat}>
-                    <input type="text" placeholder='New chat' ref={chatRef}/>
+                    <input type="text" placeholder='New chat' ref={chatRef} />
                     <button>Send</button>
                 </form>
             </div>

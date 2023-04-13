@@ -1,6 +1,6 @@
 .wrapper-server {
     display: grid;
-    grid-template-columns: 0.75fr 5fr 0.75fr;
+    grid-template-columns: 1fr 5fr 0.6fr;
     flex-direction: row;
     justify-content: space-between;
     height: 100vh;
@@ -30,6 +30,7 @@
         }
     }
     .server-channels {
+        position: relative;
         background-color: rgb(63, 63, 63);
         background: linear-gradient(108deg, rgb(83, 83, 83) 0%, rgba(70,70,70,1) 100%);
         padding: 20px;
@@ -40,7 +41,8 @@
         h2 {
             font-size: 1.3rem;
         }
-        li {
+        .channel-button {
+            position: relative;
             padding: 5px;
             background-color: rgba(75, 75, 75, 0);
             border-radius: 5px;
@@ -49,6 +51,20 @@
             &:hover {
                 background-color: rgb(63, 63, 63);
             }
+        }
+        .call-controls {
+            position: absolute;
+            background-color: rgb(40, 40, 40);
+            top: 0;
+            height: 400px;
+            left: calc(100% + 1px);
+            border-bottom: 1px solid rgb(152, 152, 152);
+            visibility: hidden;
+            pointer-events: none;
+        }
+        .joined-active {
+            visibility: visible;
+            pointer-events: all;
         }
         h3 {
             display: grid;
@@ -63,6 +79,7 @@
         display: grid;
         grid-template-rows: 95% 5%;
         height: 100vh;
+        background-color: #323232;
         .chats {
             padding: 10px;
             display: flex;
@@ -113,6 +130,9 @@
                 }
             }
         }
+    }
+    .chat-area-joined {
+        grid-template-rows: 400px auto 5% !important; 
     }
     .joined-users {
         padding: 20px;

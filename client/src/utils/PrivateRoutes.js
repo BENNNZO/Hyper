@@ -7,7 +7,10 @@ export default function PrivateRoutes() {
     
     useEffect(() => {
         axios.get('/users/verify')
-            .then(res => setAuth(res.data))
+            .then(res => {
+                setAuth(res.data)
+                res.data === true ? axios.get('/meeting/get-token').then(res => document.cookie = `authToken=${res.data.token}`) : document.cookie = `authToken=not-verified`
+            })
     }, [])
 
     return auth ? <Outlet /> : <Navigate to='/login' />

@@ -21,6 +21,10 @@ const voiceChannelSchema = new mongoose.Schema (
             type: String,
             maxlength: 20,
             require: true
+        },
+        roomId: {
+            type: String,
+            require: true
         }
     }
 )

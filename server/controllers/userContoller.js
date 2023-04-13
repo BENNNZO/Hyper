@@ -31,7 +31,6 @@ module.exports = {
             bcrypt.compare(req.body.password, userData.password)
                 .then(data => {
                     if (data) {
-                        // const signedJWT = jwt.sign({ data: userData._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '5h' })
                         const signedJWT = jwt.sign({ data: userData._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' })
                         res.cookie('_auth', signedJWT, { httpOnly: true })
                         res.status(200).send()
@@ -44,7 +43,7 @@ module.exports = {
         }
     },
     verifyUser(req, res) {
-        try { 
+        try {
             const id = jwt.verify(req.cookies._auth, process.env.ACCESS_TOKEN_SECRET)
             res.cookie('id', id.data)
             res.send(true)

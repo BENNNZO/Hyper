@@ -2,35 +2,20 @@ require("dotenv").config();
 
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const jwt = require("jsonwebtoken");
+const axios = require('axios')
 
 module.exports = {
     getToken(req, res) {
-        const API_KEY = process.env.VIDEOSDK_API_KEY;
-        const SECRET_KEY = process.env.VIDEOSDK_SECRET_KEY;
-      
-        const options = { expiresIn: "10m", algorithm: "HS256" };
-      
-        const payload = {
-          apikey: API_KEY,
-          permissions: ["allow_join", "allow_mod"], // also accepts "ask_join"
-        };
-      
-        const token = jwt.sign(payload, SECRET_KEY, options);
+        const options = { expiresIn: "7d", algorithm: "HS256" };
+        const payload = { apikey: process.env.VIDEOSDK_API_KEY, permissions: ["allow_join"] };
+        const token = jwt.sign(payload, process.env.VIDEOSDK_SECRET_KEY, options);
         res.json({ token });
     },
     createMeeting(req, res) { 
-        const { token, region } = req.body;
-        const url = `${process.env.VIDEOSDK_API_ENDPOINT}/api/meetings`;
-        const options = {
-            method: "POST",
-            headers: { Authorization: token, "Content-Type": "application/json" },
-            body: JSON.stringify({ region }),
-        };
-
-        fetch(url, options)
-            .then((response) => response.json())
-            .then((result) => res.json(result)) // result will contain meetingId
-            .catch((error) => console.error("error", error));
+        axios.post('https://api.videosdk.live/api/meetings', {}, {
+            headers: { Authorization: req.body.token, "Content-Type": "application/json" }
+        })
+        .then(data => res.json({ meetingId: data.data.meetingId }))
     },
     validateMeeting(req, res) {
         const token = req.body.token;
@@ -45,7 +30,7 @@ module.exports = {
 
         fetch(url, options)
             .then((response) => response.json())
-            .then((result) => res.json(result)) // result will contain meetingId
+            .then((result) => res.json(result))
             .catch((error) => console.error("error", error));
     }
 }
