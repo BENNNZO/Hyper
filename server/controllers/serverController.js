@@ -16,26 +16,30 @@ module.exports = {
     },
     createServer(req, res) {
         axios.post('/meeting/create-meeting', { token: req.cookies.authToken })
-            .then(response => {
-                Server.create({
-                    serverName: req.body.serverName,
-                    joinedUsers: req.params.id,
-                    voiceChannels: {
-                        channelName: 'default',
-                        roomId: response.data.meetingId
-                    },
-                    textChannels: {
-                        channelName: 'default'
-                    }
-                }).then(data => {
-                    User.findOneAndUpdate(
-                        { _id: req.params.id },
-                        { $push: { joinedServers: data._id }},
-                        { new: true }
-                    ).then(userData => res.json({data, userData}))
-                    .catch(err => res.json(err))
-                }).catch(err => res.json(err))
-            })
+        .then(response => {
+            Server.create({
+                serverName: req.body.serverName,
+                joinedUsers: req.params.id,
+                voiceChannels: {
+                    channelName: 'default',
+                    roomId: response.data.meetingId
+                },
+                textChannels: {
+                    channelName: 'default'
+                }
+            }).then(data => {
+                User.findOneAndUpdate(
+                    { _id: req.params.id },
+                    { $push: { joinedServers: data._id }},
+                    { new: true }
+                ).then(userData => res.json({data, userData}))
+                .catch(err => res.json(err))
+            }).catch(err => res.json(err))
+        })
+        .catch(err => {
+            console.log(err)
+            res.json(err)
+        })
     },
     addServer(req, res) {
         Server.findOneAndUpdate(
