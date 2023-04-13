@@ -1,6 +1,5 @@
 require("dotenv").config();
 const { Server, User } = require('../models')
-const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 const axios = require('../utils/Axios')
 
 module.exports = {
