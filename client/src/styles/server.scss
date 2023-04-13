@@ -53,6 +53,7 @@
             }
         }
         .call-controls {
+            padding: 10px;
             position: absolute;
             background-color: rgb(40, 40, 40);
             top: 0;
@@ -61,6 +62,58 @@
             border-bottom: 1px solid rgb(152, 152, 152);
             visibility: hidden;
             pointer-events: none;
+            .controls {
+                position: absolute;
+                display: flex;
+                gap: 25px;
+                bottom: 10px;
+                left: 50%;
+                transform: translateX(-50%);
+                button {
+                    height: 50px;
+                    aspect-ratio: 1;
+                    border-radius: 100%;
+                    border: none;
+                    cursor: pointer;
+                    padding: 10px;
+                    img {
+                        filter: invert(1);
+                    }
+                }
+            }
+            .participants {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                height: calc(100% - 60px);
+                gap: 20px;
+                .participant-view {
+                    position: relative;
+                    overflow: hidden;
+                    border-radius: 10px;
+                    // border: 2px solid rgb(152, 152, 152);
+                    filter: drop-shadow(0 0 10px rgba(0, 0, 0, 0.445));
+                    p {
+                        position: absolute;
+                        background-color: #27272797;
+                        padding: 2px 5px;
+                        border-radius: 5px;
+                        margin: 5px;
+                    }
+                    .weboff {
+                        background-color: rgb(59, 59, 59);
+                        margin: 0;
+                        padding: 5px;
+                        height: 100%;
+                        width: 100%;
+                        font-size: 2rem;
+                        font-weight: 700;
+                        display: grid;
+                        place-items: center;
+                    }
+                }
+            }
         }
         .joined-active {
             visibility: visible;
@@ -159,6 +212,10 @@
     }
     .active-channel {
         background-color: rgb(67, 67, 67) !important;
+    }
+    .participant-view {
+        height: 150px;
+        aspect-ratio: 16/9;
     }
 }
 

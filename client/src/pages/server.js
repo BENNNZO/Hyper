@@ -8,6 +8,11 @@ import plusIcon from '../assets/svg/plus-icon.svg'
 import arrowIcon from '../assets/svg/arrow-forward.svg'
 import volumeIcon from '../assets/svg/volume-max-icon.svg'
 import chatIcon from '../assets/svg/5.svg'
+import leaveButton from '../assets/svg/close-outline.svg'
+import micOnIcon from '../assets/svg/mic-outline.svg'
+import micOffIcon from '../assets/svg/mic-off-outline.svg'
+import webcamOnIcon from '../assets/svg/videocam-outline.svg'
+import webcamOffIcon from '../assets/svg/videocam-off-outline.svg'
 
 export default function Server() {
     let token = Cookies.get('authToken')
@@ -136,21 +141,29 @@ export default function Server() {
                     <h3><img src={volumeIcon} alt="voice channel icon" />{props.channelName}</h3>
                 </div>
                 <div className={`call-controls ${props.roomId === activeVoiceChannel ? 'joined-active' : ''}`} style={{ width: chatAreaRef.current.offsetWidth }}>
-                    <button onClick={() => {
-                        leave()
-                        setJoined(false)
-                        setLocalMic(true)
-                        setActiveVoiceChannel('')
-                    }}>LEAVE</button>
-                    <button onClick={() => {
-                        toggleMic()
-                        setLocalMic(!localMic)
-                    }}>MIC: {localMic ? 'On' : 'Off'}</button>
-                    <button onClick={() => {
-                        toggleWebcam()
-                        setLocalWebcam(!localWebcam)
-                    }}>WEBCAM: {localWebcam ? 'On' : 'Off'}</button>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(3,1fr)" }}>
+                    <div className='controls'>
+                        <button style={{backgroundColor: 'salmon'}} onClick={() => {
+                            leave()
+                            setJoined(false)
+                            setLocalMic(true)
+                            setActiveVoiceChannel('')
+                        }}>
+                            <img src={leaveButton} alt="leave call" />
+                        </button>
+                        <button style={localMic ? {backgroundColor: 'white'} : {backgroundColor: '#4a4a4a'}} onClick={() => {
+                            toggleMic()
+                            setLocalMic(!localMic)
+                        }}>
+                            {localMic ? <img src={micOnIcon} alt='toggle mic button' style={{filter: 'invert(0)'}}></img> : <img src={micOffIcon} alt='toggle mic button' style={{filter: 'invert(1)'}}></img>}
+                        </button>
+                        <button style={localWebcam ? {backgroundColor: 'white'} : {backgroundColor: '#4a4a4a'}} onClick={() => {
+                            toggleWebcam()
+                            setLocalWebcam(!localWebcam)
+                        }}>
+                            {localWebcam ? <img src={webcamOnIcon} alt='toggle mic button' style={{filter: 'invert(0)'}}></img> : <img src={webcamOffIcon} alt='toggle mic button' style={{filter: 'invert(1)'}}></img>}
+                        </button>
+                    </div>
+                    <div className='participants'>
                         {[...participants.keys()].map((participantId, index) => (
                             <ParticipantView key={index} participantId={participantId} />
                         ))}
@@ -161,9 +174,10 @@ export default function Server() {
     };
 
     const ParticipantView = ({ participantId }) => {
-        const { displayName, micOn, webcamOn, webcamStream } = useParticipant(participantId)
+        const { displayName, micOn, webcamOn, webcamStream, micStream, isLocal } = useParticipant(participantId)
 
         const webcamRef = useRef(null)
+        const micRef = useRef(null);
 
         useEffect(() => {
             if (webcamRef.current) {
@@ -183,11 +197,29 @@ export default function Server() {
             }
         }, [webcamStream, webcamOn]);
 
+        useEffect(() => {
+            if (micRef.current) {
+                if (micOn && micStream) {
+                    const mediaStream = new MediaStream();
+                    mediaStream.addTrack(micStream.track);
+
+                    micRef.current.srcObject = mediaStream;
+                    micRef.current
+                        .play()
+                        .catch((error) =>
+                            console.error("videoElem.current.play() failed", error)
+                        );
+                } else {
+                    micRef.current.srcObject = null;
+                }
+            }
+        }, [micStream, micOn]);
+
         return (
-            <div style={{ height: '300px', backgroundColor: '#C0C2C9', objectFit: 'cover' }}>
-                <p>{displayName}</p>
+            <div className='participant-view'>
+                <p className={webcamOn ? '' : 'weboff'}>{webcamOn ? displayName : `${displayName.split('')[0]}${displayName.split('')[1]}${displayName.split('')[2]}`}</p>
                 <video width={'100%'} height={'100%'} ref={webcamRef} autoPlay></video>
-                <p>Webcam:{webcamOn ? "On" : "Off"} Mic: {micOn ? "On" : "Off"}</p>
+                <audio ref={micRef} autoPlay muted={isLocal} />
             </div>
         )
     }
