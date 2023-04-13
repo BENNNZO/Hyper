@@ -49,13 +49,13 @@ export default function Server() {
 
     useEffect(() => {
         updateChats()
-        // const timer = setInterval(() => {
-        //     updateChats()
-        //     console.log(activeTextChannel)
-        //     console.log('activeTextChannel')
-        // }, 1000)
+        const timer = setInterval(() => {
+            updateChats()
+            console.log(activeTextChannel)
+            console.log('activeTextChannel')
+        }, 1000)
 
-        // return () => clearInterval(timer)
+        return () => clearInterval(timer)
     }, [activeTextChannel])
 
     function updateData() {

@@ -23,7 +23,6 @@ const friendSchema = new mongoose.Schema(
             enums: [0, 1, 2, 3] // 0: add friend, 1: requested, 2: pending, 3: friends 
         },
         chats: [chatSchema]
-        // chats: [{ type: String, ref: 'Chat' }]
     }
 )
 

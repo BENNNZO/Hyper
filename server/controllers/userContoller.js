@@ -82,28 +82,30 @@ module.exports = {
             .then(data => res.json(data))
             .catch(err => res.json(err))
     },
-    async requestUserFriends(req, res) {
+    requestUserFriends(req, res) {
         const headers = []
-            Friend.findOneAndUpdate(
-                { requester: req.params.id, recipient: req.body.recipient },
-                { $setOnInsert: { status: 1 }}, 
-                { upsert: true, new: true, overwrite: false }
-            ).then(data => {
-                User.findOneAndUpdate(
-                    { _id: req.params.id, friends: { $nin: data._id }},
-                    { $push: { friends: data._id }} 
-                ).then(data => headers.push(data))
-            })
-            Friend.findOneAndUpdate(
-                { requester: req.body.recipient, recipient: req.params.id },
-                { $setOnInsert: { status: 2 }},
-                { upsert: true, new:true, overwrite: true }
-            ).then(data => {
-                User.findOneAndUpdate(
-                    { _id: req.body.recipient, friends: { $nin: data._id }},
-                    { $push: { friends: data._id }}
-                ).then(data => headers.push(data))
-            })
+        Friend.findOneAndUpdate(
+            { requester: req.params.id, recipient: req.body.recipient },
+            { $setOnInsert: { status: 1 }}, 
+            { upsert: true, new: true, overwrite: false }
+        ).then(data => {
+            User.findOneAndUpdate(
+                { _id: req.params.id, friends: { $nin: data._id }},
+                { $push: { friends: data._id }} 
+            ).then(data => headers.push(data))
+            .catch(err => headers.push(err))
+        }).catch(err => headers.push(err))
+        Friend.findOneAndUpdate(
+            { requester: req.body.recipient, recipient: req.params.id },
+            { $setOnInsert: { status: 2 }},
+            { upsert: true, new:true, overwrite: true }
+        ).then(data => {
+            User.findOneAndUpdate(
+                { _id: req.body.recipient, friends: { $nin: data._id }},
+                { $push: { friends: data._id }}
+            ).then(data => headers.push(data))
+            .catch(err => headers.push(err))
+        }).catch(err => headers.push(err))
         res.json(headers)
     },
     acceptFriendRequest(req, res) {
@@ -138,6 +140,7 @@ module.exports = {
 
     getFriendDM(req, res) {
         Friend.findById(req.params.id, 'chats')
+            .populate('chats.chatter', 'username')
             .then(data => res.json(data))
             .catch(err => res.json(err))
     },

@@ -14,6 +14,7 @@ import './styles/index.scss'
 import './styles/login.scss'
 import './styles/server.scss'
 import './styles/sidebar.scss'
+import './styles/home.scss'
 
 export default function App() {
     return (

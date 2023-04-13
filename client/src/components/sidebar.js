@@ -55,7 +55,7 @@ export default function Sidebar() {
                     </div>
                 </div>
                 <section className='wrapper-sidebar'>
-                    <button className="profile-icon">
+                    <button className="profile-icon" onClick={() => navigate(`/`)}>
                         <p>{(userData.username !== undefined) ? userData.username.split('')[0].toUpperCase() : 'loading'}</p>
                     </button>
                     <span className="br"></span>
