@@ -9,7 +9,8 @@ const {
     delServerChat,
     delVoiceChannel,
     delTextChannel,
-    retrieveChat
+    retrieveChat,
+    addServer
 } = require('../../controllers/serverController')
 
 router.route('/')
@@ -33,5 +34,8 @@ router.route('/chat')
 router.route('/:id')
     .get(findServer)
     .post(createServer)
+
+router.route('/add/:id')
+    .post(addServer)
 
 module.exports = router

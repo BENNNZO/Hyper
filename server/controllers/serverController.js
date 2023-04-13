@@ -38,6 +38,19 @@ module.exports = {
                 }).catch(err => res.json(err))
             })
     },
+    addServer(req, res) {
+        Server.findOneAndUpdate(
+            { _id: req.body.serverId, joinedUsers: { $ne: req.params.id } },
+            { $push: {joinedUsers: req.params.id }},
+            { new: true }
+        ).then(data => {
+            User.findOneAndUpdate(
+                { _id: req.params.id },
+                { $push: { joinedServers: data.data._id }}
+            ).then(data2 => res.json(data2))
+        })
+        .catch(err => res.json(err))
+    },
     newTextChannel(req, res) {
         Server.findOneAndUpdate(
             { _id: req.body.serverId },

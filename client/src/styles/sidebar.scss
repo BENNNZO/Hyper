@@ -120,22 +120,28 @@
     backdrop-filter: blur(10px);
     opacity: 0;
     transition: all 0.3s ease-out;
-    display: grid;
-    place-content: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
     .dialog-box {
         position: relative;
         background-color: black;
         padding: 10px;
+        padding-top: 15px;
         display: flex;
         flex-direction: column;
         gap: 10px;
         border-radius: 13px;
         background: rgb(101,101,101);
         background: linear-gradient(196deg, rgba(101,101,101,1) 0%, rgba(70,70,70,1) 100%);
+        color: rgb(200, 200, 200);
         .xButton {
-            position: relative;
+            position: absolute;
             width: 25px;
-            left: calc(100% - 25px);
+            left: calc(100% - 35px);
+            top: 10px;
             background-color: rgb(49, 49, 49);
             border-radius: 100px;
             transform: rotate(45deg);

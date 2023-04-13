@@ -31,7 +31,7 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
-        try {
+        if (activeDM !== undefined) {
             axios.get(`/users/dm/${activeDM.friendId}`)
             .then(res => {
                 setChats(res.data.chats.reverse())
@@ -43,8 +43,6 @@ export default function Home() {
                 })
             }, 2500);
 
-        } catch (err) {
-            console.log(err)
         }
         return clearInterval()
     }, [activeDM])
@@ -119,11 +117,15 @@ export default function Home() {
                 <h2>Friends</h2>
                 <ul>
                     {userData.friends !== undefined && userData.friends.map((friend, index) => {
+                        let returnEl
                         if (friend.status === 3) {
-                            return <li key={index} onClick={() => setActiveDM({ userId: friend.recipient._id, friendId: friend._id })}>
-                                {friend.recipient.username}
-                            </li>
+                            returnEl = (
+                                <li key={index} style={activeDM !== undefined && activeDM.friendId === friend._id ? {backgroundColor: 'red'} : null} onClick={() => setActiveDM({ userId: friend.recipient._id, friendId: friend._id })}>
+                                    {friend.recipient.username}
+                                </li>
+                            ) 
                         }
+                        return returnEl
                     })}
                 </ul>
             </section>
@@ -153,24 +155,32 @@ export default function Home() {
                 <span className="br">Pending</span>
                 <ul className='pending-requests'>
                     {userData.friends !== undefined && userData.friends.map((friend, index) => {
+                        let returnEl
                         if (friend.status === 1) {
-                            return <li key={index}>
-                                <p>{friend.recipient.username}</p>
-                                <img src={xButton} alt="stop pending request" onClick={() => handleRemoveRequest(friend.recipient._id)}/>
-                            </li>
+                            returnEl = (
+                                <li key={index}>
+                                    <p>{friend.recipient.username}</p>
+                                    <img src={xButton} alt="stop pending request" onClick={() => handleRemoveRequest(friend.recipient._id)}/>
+                                </li>
+                            )
                         }
+                        return returnEl
                     })}
                 </ul>
                 <span className="br">Recieved</span>
                 <ul className='recieved-requests'>
                     {userData.friends !== undefined && userData.friends.map((friend, index) => {
+                        let returnEl
                         if (friend.status === 2) {
-                            return <li key={index}>
-                                <p>{friend.recipient.username}</p>
-                                <img src={xButton} alt="stop pending request" onClick={() => handleRemoveRequest(friend.recipient._id)}/>
-                                <img src={checkButton} alt="accept pending request" onClick={() => handleAcceptRequest(friend.recipient._id)}/>
-                            </li>
+                            returnEl = (
+                                <li key={index}>
+                                    <p>{friend.recipient.username}</p>
+                                    <img src={xButton} alt="stop pending request" onClick={() => handleRemoveRequest(friend.recipient._id)}/>
+                                    <img src={checkButton} alt="accept pending request" onClick={() => handleAcceptRequest(friend.recipient._id)}/>
+                                </li>
+                            )
                         }
+                        return returnEl
                     })}
                 </ul>
             </section>

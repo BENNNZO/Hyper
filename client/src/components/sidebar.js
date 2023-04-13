@@ -10,6 +10,7 @@ export default function Sidebar() {
     const navigate = useNavigate()
 
     const serverNameRef = useRef()
+    const serverIdRef = useRef()
 
     const [userData, setUserData] = useState()
     const [createServer, setCreateServer] = useState(false)
@@ -23,7 +24,6 @@ export default function Sidebar() {
 
     useEffect(() => {  
         (userData !== undefined) ? setLoading(false) : setLoading(true)
-        console.log(userData)
     }, [userData])
 
     function handleCreateServerSubmit(e) {
@@ -41,43 +41,62 @@ export default function Sidebar() {
         }
     }
 
+    function handleAddServerSubmit(e) {
+        let id = Cookies.get('id')
+        e.preventDefault()
+        console.log('add server clicked')
+        if (serverIdRef.current.value !== '') {
+            axios.post(`/server/add/${id}`, {
+                serverId: serverIdRef.current.value
+            })
+            .then(res => console.log(res))
+            setCreateServer(!createServer)
+        }
+        serverIdRef.current.value = ''
+    }
+
     if (loading) return <h1>loading</h1> 
 
     return (
-            <>
-                <div className={`create-server-dialog ${createServer ? 'create-server-active' : ''}`}>
-                    <div className="dialog-box">
-                        <img onClick={() => setCreateServer(!createServer)} src={plusIcon} alt="close create new server dialog" className='xButton' />
-                        <form onSubmit={handleCreateServerSubmit} className="input-positioning">
-                            <input type="text" placeholder='Server Name' ref={serverNameRef} />
-                            <button>Create<img src={arrowIcon} alt='create server icon' /></button>
-                        </form>
-                    </div>
+        <>
+            <div className={`create-server-dialog ${createServer ? 'create-server-active' : ''}`}>
+                <div className="dialog-box">
+                    <img onClick={() => setCreateServer(!createServer)} src={plusIcon} alt="close create new server dialog" className='xButton' />
+                    <p>Create Server:</p>
+                    <form onSubmit={handleCreateServerSubmit} className="input-positioning">
+                        <input type="text" placeholder='Server Name' ref={serverNameRef} />
+                        <button>Create<img src={arrowIcon} alt='create server icon' /></button>
+                    </form>
+                    <p>Add Existing Server:</p>
+                    <form onSubmit={handleAddServerSubmit} className="input-positioning">
+                        <input type="text" placeholder='Server ID' ref={serverIdRef} />
+                        <button>Add<img src={arrowIcon} alt='create server icon' /></button>
+                    </form>
                 </div>
-                <section className='wrapper-sidebar'>
-                    <button className="profile-icon" onClick={() => navigate(`/`)}>
-                        <p>{(userData.username !== undefined) ? userData.username.split('')[0].toUpperCase() : 'loading'}</p>
-                    </button>
-                    <span className="br"></span>
-                        <ul>
-                            {userData.joinedServers !== undefined && userData.joinedServers.map(server => {
-                                return (
-                                    <li key={server._id} onClick={() => navigate(`/${server._id}`)}>
-                                        <p>{server.serverName.split('')[0].toUpperCase()}</p>
-                                        <span>{server.serverName}</span>
-                                    </li>
-                                )
-                            })}
-                        </ul>
-                    <span className="br"></span>
-                    <button className="create-server" onClick={() => setCreateServer(!createServer)}>
-                        <img src={plusIcon} alt="create new server" />
-                    </button>
-                </section>
-                <section className="main-content-positioning">
-                    <Outlet />
-                </section>
-            </>
-        )
-    // }
+            </div>
+            <section className='wrapper-sidebar'>
+                <button className="profile-icon" onClick={() => navigate(`/`)}>
+                    <p>{(userData.username !== undefined) ? userData.username.split('')[0].toUpperCase() : 'loading'}</p>
+                </button>
+                <span className="br"></span>
+                    <ul>
+                        {userData.joinedServers !== undefined && userData.joinedServers.map(server => {
+                            return (
+                                <li key={server._id} onClick={() => navigate(`/${server._id}`)}>
+                                    <p>{server.serverName.split('')[0].toUpperCase()}</p>
+                                    <span>{server.serverName}</span>
+                                </li>
+                            )
+                        })}
+                    </ul>
+                <span className="br"></span>
+                <button className="create-server" onClick={() => setCreateServer(!createServer)}>
+                    <img src={plusIcon} alt="create new server" />
+                </button>
+            </section>
+            <section className="main-content-positioning">
+                <Outlet />
+            </section>
+        </>
+    )
 }
