@@ -39,23 +39,22 @@ export default function Server() {
         axios.get(`/server/${serverId}`)
             .then(res => {
                 setCurrentServer(res.data)
-                console.log(res.data)
                 res.data.textChannels[0]._id !== undefined ? setActiveTextChannel(res.data.textChannels[0]._id) : setActiveTextChannel('')
             })
         axios.get(`/users/${Cookies.get('id')}`)
             .then(res => setCurrentUser(res.data.username))
         updateChats()
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [serverId])
 
     useEffect(() => {
         updateChats()
         const timer = setInterval(() => {
             updateChats()
-            console.log(activeTextChannel)
-            console.log('activeTextChannel')
-        }, 1000)
+        }, 2500)
 
         return () => clearInterval(timer)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [activeTextChannel])
 
     function updateData() {
@@ -123,8 +122,6 @@ export default function Server() {
 
     const MeetingView = (props) => {
         const { join, leave, toggleMic, toggleWebcam, participants } = useMeeting()
-        const meeting = useMeeting()
-        console.log(meeting)
 
         return (
             <>
@@ -133,11 +130,8 @@ export default function Server() {
                         join()
                         setActiveVoiceChannel(props.roomId)
                         setJoined(true)
-                    } else {
-                        console.log('already joined in a server')
                     }
                 }}>
-                    <p>{props.roomId}</p>
                     <h3><img src={volumeIcon} alt="voice channel icon" />{props.channelName}</h3>
                 </div>
                 <div className={`call-controls ${props.roomId === activeVoiceChannel ? 'joined-active' : ''}`} style={{ width: chatAreaRef.current.offsetWidth }}>
@@ -245,7 +239,7 @@ export default function Server() {
                 </div>
             </div>
             <div className='server-channels'>
-                <h2>{currentServer.serverName !== undefined && currentServer.serverName.toUpperCase()}</h2>
+                <h2 onClick={() => navigator.clipboard.writeText(currentServer._id)}>{currentServer.serverName !== undefined && currentServer.serverName.toUpperCase()}</h2>
                 <span className="br">
                     <p>VOICE CHANNELS</p>
                     <img src={plusIcon} alt="add voice channel" onClick={() => setCreateVoice(true)} />

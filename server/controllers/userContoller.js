@@ -18,7 +18,6 @@ module.exports = {
             .catch(err => res.json(err))
     },
     findUser(req, res) {
-        console.log('getting user data...')
         User.findOne({ _id: req.params.id }, '-password -_id -__v -joinDate')
             .populate({ path: 'friends', populate: { path: 'requester', select: 'username' }})
             .populate({ path: 'friends', populate: { path: 'recipient', select: 'username' }})
@@ -26,8 +25,12 @@ module.exports = {
             .then(user => res.json(user))
             .catch(err => res.json(err))
     },
+    findUserByEmail(req, res) {
+        User.findOne({ email: req.params.email }, '-password -__v -joinDate')
+            .then(user => res.json(user))
+            .catch(err => res.json(err))
+    },
     async loginUser(req, res) {
-        console.log('getting user data...')
         const userCheck = await User.exists({ email: req.body.email })
         if (userCheck) {
             const userData = await User.findOne({ email: req.body.email })

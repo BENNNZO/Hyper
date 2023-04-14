@@ -12,7 +12,7 @@ export default function Home() {
     const [userData, setUserData] = useState({})
     const [chats, setChats] = useState([])
     const [requestData, setRequestData] = useState('')
-    const [activeDM, setActiveDM] = useState()
+    const [activeDM, setActiveDM] = useState(null)
 
     useEffect(() => {
         setInterval(() => {
@@ -31,7 +31,7 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
-        if (activeDM !== undefined) {
+        if (activeDM !== null) {
             axios.get(`/users/dm/${activeDM.friendId}`)
             .then(res => {
                 setChats(res.data.chats.reverse())
@@ -49,14 +49,13 @@ export default function Home() {
 
     function handleFriendRequest(e) {
         e.preventDefault()
-        if (friendRequestRef.current.value !== Cookies.get('id')) {
-            axios.post(`/users/friends/${Cookies.get('id')}`, {
-                recipient: friendRequestRef.current.value
-            })
-
-            axios.get(`/users/${friendRequestRef.current.value}`)
+        if (friendRequestRef.current.value.trim() !== userData.email) {
+            axios.post(`/users/email/${friendRequestRef.current.value.trim()}`)
             .then(res => {
-                if (res.data.username) {
+                if (res.data !== null) {
+                    axios.post(`/users/friends/${Cookies.get('id')}`, {
+                        recipient: res.data._id
+                    })
                     setRequestData(`Request sent to ${res.data.username}`)
                 } else {
                     setRequestData('No User Found')
@@ -99,21 +98,22 @@ export default function Home() {
 
     function handleNewDM(e) {
         e.preventDefault()
-        axios.post(`/users/dm/${Cookies.get('id')}`, {
-            recipient: activeDM.userId,
-            text: chatRef.current.value
-        })
-        axios.get(`/users/dm/${activeDM.friendId}`)
-        .then(res => {
-            setChats(res.data.chats.reverse())
-        })
-        chatRef.current.value = ''
+        if (activeDM !== null) {
+            axios.post(`/users/dm/${Cookies.get('id')}`, {
+                recipient: activeDM.userId,
+                text: chatRef.current.value
+            })
+            axios.get(`/users/dm/${activeDM.friendId}`)
+            .then(res => {
+                setChats(res.data.chats.reverse())
+            })
+            chatRef.current.value = ''
+        }
     }
 
     return (
         <section className='home-page'>
             <section className="friends-list">
-                <button onClick={() => {navigator.clipboard.writeText(Cookies.get('id'))}}>Copy User ID</button>
                 <h2>Friends</h2>
                 <ul>
                     {userData.friends !== undefined && userData.friends.map((friend, index) => {
@@ -148,7 +148,7 @@ export default function Home() {
             <section className="friend-requests">
                 <form onSubmit={handleFriendRequest}>
                     <h2>Add Friend</h2>
-                    <input type="text" placeholder='User ID' ref={friendRequestRef} />
+                    <input type="text" placeholder='User Email' ref={friendRequestRef} />
                     <button>Request</button>
                     <p>{requestData}</p>
                 </form>

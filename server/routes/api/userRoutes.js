@@ -13,7 +13,8 @@ const {
     sendFriendDM,
     deleteFriendDM,
     loginUser,
-    verifyUser
+    verifyUser,
+    findUserByEmail
 } = require('../../controllers/userContoller')
 
 /* ------------------------------- USER ROUTES ------------------------------ */
@@ -27,6 +28,9 @@ router.route('/login')
 
 router.route('/verify')
     .get(verifyUser)
+    
+router.route('/email/:email')
+    .post(findUserByEmail)
 
 router.route('/:id')
     .get(findUser)

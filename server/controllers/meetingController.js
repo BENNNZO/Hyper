@@ -12,14 +12,11 @@ module.exports = {
         res.json({ token });
     },
     createMeeting(req, res) { 
-        console.log('creating meeting')
         axios.post('https://api.videosdk.live/api/meetings', {}, {
             headers: { Authorization: req.body.token, "Content-Type": "application/json" }
         })
         .then(data => {
-            console.log('sending data')
             res.json({ meetingId: data.data.meetingId })
-            console.log('data sent')
         })
     },
     validateMeeting(req, res) {

@@ -39,7 +39,43 @@
         gap: 15px;
         border-right: 1px solid rgb(152, 152, 152);
         h2 {
+            position: relative;
             font-size: 1.3rem;
+            text-align: center;
+            padding: 5px 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            &::before, &::after {
+                position: absolute;
+                top: 50%;
+                background-color: #717171;
+                opacity: 0;
+
+            }
+            &::after {
+                content: 'Click To Copy Server ID';
+                left: 120%;
+                transform: translateY(-50%);
+                white-space: nowrap;
+                font-size: medium;
+                font-weight: 400;
+                padding: 5px 8px;
+                border-radius: 5px;
+            }
+            &::before {
+                left: calc(120% - 5px);
+                transform: translateY(-50%) rotate(45deg);
+                content: '';
+                height: 10px;
+                aspect-ratio: 1;
+                border-radius: 1px;
+            }
+            &:hover {
+                background-color: #3f3f3f;
+                &::after, &::before {
+                    opacity: 1;
+                }
+            }
         }
         .channel-button {
             position: relative;
