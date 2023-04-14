@@ -31,11 +31,12 @@ router.route('/chat')
     .post(chatServer)
     .delete(delServerChat)
 
+router.route('/add/:id')
+    .post(addServer)
+
 router.route('/:id')
     .get(findServer)
     .post(createServer)
 
-router.route('/add/:id')
-    .post(addServer)
 
 module.exports = router
