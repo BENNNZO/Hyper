@@ -15,8 +15,10 @@ module.exports = {
             .catch(err => res.json(err))
     },
     createServer(req, res) {
+        console.log('sending request')
         axios.post('/meeting/create-meeting', { token: req.cookies.authToken })
             .then(response => {
+                console.log('data recieved')
                 Server.create({
                     serverName: req.body.serverName,
                     joinedUsers: req.params.id,
@@ -28,6 +30,7 @@ module.exports = {
                         channelName: 'default'
                     }
                 }).then(data => {
+                    console.log('setting user data')
                     User.findOneAndUpdate(
                         { _id: req.params.id },
                         { $push: { joinedServers: data._id }},
