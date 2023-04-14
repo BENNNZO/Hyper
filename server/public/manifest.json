@@ -1,0 +1,11 @@
+{
+    "short_name": "Hype",
+    "name": "discord copy built from scratch",
+    "icons": [
+        {
+            "src": "favicon.ico",
+            "sizes": "32x32",
+            "type": "image/x-icon"
+        }
+    ]
+}
