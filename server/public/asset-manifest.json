@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.b90d0394.css",
-    "main.js": "/static/js/main.6537eb3d.js",
+    "main.css": "/static/css/main.2e8c4561.css",
+    "main.js": "/static/js/main.6a9929fc.js",
     "static/media/mic-off-outline.svg": "/static/media/mic-off-outline.8479a15b7d92c1b217efd0241113aead.svg",
     "static/media/5.svg": "/static/media/5.e0d0fe95583e9459b163ecaad8877204.svg",
     "static/media/videocam-off-outline.svg": "/static/media/videocam-off-outline.2fbccd65f300d86a94b2781d1ee0b304.svg",
@@ -13,11 +13,11 @@
     "static/media/arrow-forward.svg": "/static/media/arrow-forward.a2595b1c2c51950de8ecc468336b7a0f.svg",
     "static/media/close-outline.svg": "/static/media/close-outline.7e0b6c2c688a129afad2d9a43f536ba8.svg",
     "static/media/checkmark-outline.svg": "/static/media/checkmark-outline.a35b71352778efa2e39a86af94bc69f1.svg",
-    "main.b90d0394.css.map": "/static/css/main.b90d0394.css.map",
-    "main.6537eb3d.js.map": "/static/js/main.6537eb3d.js.map"
+    "main.2e8c4561.css.map": "/static/css/main.2e8c4561.css.map",
+    "main.6a9929fc.js.map": "/static/js/main.6a9929fc.js.map"
   },
   "entrypoints": [
-    "static/css/main.b90d0394.css",
-    "static/js/main.6537eb3d.js"
+    "static/css/main.2e8c4561.css",
+    "static/js/main.6a9929fc.js"
   ]
 }
