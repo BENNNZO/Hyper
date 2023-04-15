@@ -175,8 +175,10 @@ export default function Home() {
                             returnEl = (
                                 <li key={index}>
                                     <p>{friend.recipient.username}</p>
-                                    <img src={xButton} alt="stop pending request" onClick={() => handleRemoveRequest(friend.recipient._id)}/>
-                                    <img src={checkButton} alt="accept pending request" onClick={() => handleAcceptRequest(friend.recipient._id)}/>
+                                    <div>
+                                        <img src={xButton} alt="stop pending request" onClick={() => handleRemoveRequest(friend.recipient._id)}/>
+                                        <img src={checkButton} alt="accept pending request" onClick={() => handleAcceptRequest(friend.recipient._id)}/>
+                                    </div>
                                 </li>
                             )
                         }
