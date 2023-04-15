@@ -50,17 +50,11 @@ module.exports = {
             { $push: {joinedUsers: req.params.id }},
             { new: true }
         ).then(data => {
-            console.log("data")
-            console.log(data)
-            console.log("data")
             User.findOneAndUpdate(
                 { _id: req.params.id },
                 { $push: { joinedServers: data._id }},
                 { new: true }
             ).then(data2 => {
-                console.log('data2')
-                console.log(data2)
-                console.log('data2')
                 res.json(data2)
             })
         })

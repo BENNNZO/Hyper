@@ -28,7 +28,6 @@ export default function Sidebar() {
 
     useEffect(() => {
         (userData !== null) ? setLoading(false) : setLoading(true)
-        console.log(userData)
     }, [userData])
 
     function handleCreateServerSubmit(e) {
@@ -47,12 +46,14 @@ export default function Sidebar() {
 
     function handleAddServerSubmit(e) {
         e.preventDefault()
-        console.log('add server clicked')
         if (serverIdRef.current.value !== '') {
             axios.post(`/server/add/${Cookies.get('id')}`, {
                 serverId: serverIdRef.current.value.trim()
             })
-            .then(res => console.log(res))
+            .then(() => {
+                axios.get(`/users/${Cookies.get('id')}`)
+                    .then(res => setUserData(res.data))
+            })
             setCreateServer(!createServer)
         }
         serverIdRef.current.value = ''
