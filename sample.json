@@ -1,0 +1,28 @@
+// mood/activity tracker app
+
+{
+    "DATE": {
+        "mood": "1-10",
+        "energy": {
+            "morning": "1-10",
+            "afternoon": "1-10",
+            "night": "1-10"
+        },
+        "wakeup": "8:00, 8:30, etc",
+        "workout": true,
+        "shower": true,
+        "cleaned": true,
+        "work": true,
+        "games": true,
+        "music": true,
+        "social": true,
+        "drink": true,
+        "smoke": true,
+        "vape": true,
+        "breakfast": true,
+        "lunch": true,
+        "dinner": true,
+        "sleep": "8:00, 8:30, etc",
+        "notes": "notes go here"
+    }
+}
