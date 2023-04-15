@@ -50,7 +50,7 @@ export default function Sidebar() {
         console.log('add server clicked')
         if (serverIdRef.current.value !== '') {
             axios.post(`/server/add/${Cookies.get('id')}`, {
-                serverId: serverIdRef.current.value
+                serverId: serverIdRef.current.value.trim()
             })
             .then(res => console.log(res))
             setCreateServer(!createServer)
