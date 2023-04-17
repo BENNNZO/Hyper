@@ -31,19 +31,22 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
+        clearInterval(dmInt)
         if (activeDM !== null) {
-            clearInterval(dmInt)
             axios.get(`/users/dm/${activeDM.friendId}`)
             .then(res => {
                 setChats(res.data.chats.reverse())
             })
-            const dmInt = setInterval(() => {
+        }
+        const dmInt = setInterval(() => {
+            if (activeDM !== null) {
                 axios.get(`/users/dm/${activeDM.friendId}`)
                 .then(res => {
                     setChats(res.data.chats.reverse())
                 })
-            }, 2500);
-        }
+            }
+        }, 2500);
+        return clearInterval(dmInt)
     }, [activeDM])
 
     function handleFriendRequest(e) {
