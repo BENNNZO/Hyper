@@ -36,13 +36,13 @@ export default function Home() {
             .then(res => {
                 setChats(res.data.chats.reverse())
             })
-            setInterval(() => {
+            const dmInt = setInterval(() => {
                 axios.get(`/users/dm/${activeDM.friendId}`)
                 .then(res => {
                     setChats(res.data.chats.reverse())
                 })
             }, 2500);
-
+            return clearInterval(dmInt)
         }
         return clearInterval()
     }, [activeDM])
