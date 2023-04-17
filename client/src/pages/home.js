@@ -32,6 +32,7 @@ export default function Home() {
 
     useEffect(() => {
         if (activeDM !== null) {
+            clearInterval(dmInt)
             axios.get(`/users/dm/${activeDM.friendId}`)
             .then(res => {
                 setChats(res.data.chats.reverse())
@@ -42,9 +43,7 @@ export default function Home() {
                     setChats(res.data.chats.reverse())
                 })
             }, 2500);
-            return clearInterval(dmInt)
         }
-        return clearInterval()
     }, [activeDM])
 
     function handleFriendRequest(e) {
@@ -102,10 +101,11 @@ export default function Home() {
             axios.post(`/users/dm/${Cookies.get('id')}`, {
                 recipient: activeDM.userId,
                 text: chatRef.current.value
-            })
-            axios.get(`/users/dm/${activeDM.friendId}`)
-            .then(res => {
-                setChats(res.data.chats.reverse())
+            }).then(() => {
+                axios.get(`/users/dm/${activeDM.friendId}`)
+                .then(res => {
+                    setChats(res.data.chats.reverse())
+                })
             })
             chatRef.current.value = ''
         }
