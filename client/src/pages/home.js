@@ -31,7 +31,6 @@ export default function Home() {
     }, [])
 
     useEffect(() => {
-        clearInterval(dmInt)
         if (activeDM !== null) {
             axios.get(`/users/dm/${activeDM.friendId}`)
             .then(res => {
