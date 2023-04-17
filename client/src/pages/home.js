@@ -120,7 +120,7 @@ export default function Home() {
                         let returnEl
                         if (friend.status === 3) {
                             returnEl = (
-                                <li key={index} style={activeDM !== null && activeDM.friendId === friend._id ? {backgroundColor: 'red'} : null} onClick={() => setActiveDM({ userId: friend.recipient._id, friendId: friend._id })}>
+                                <li key={index} style={activeDM !== null && activeDM.friendId === friend._id ? {backgroundColor: '#7d7d7d'} : null} onClick={() => setActiveDM({ userId: friend.recipient._id, friendId: friend._id })}>
                                     {friend.recipient.username}
                                 </li>
                             ) 
