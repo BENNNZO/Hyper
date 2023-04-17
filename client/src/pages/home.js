@@ -13,6 +13,7 @@ export default function Home() {
     const [chats, setChats] = useState([])
     const [requestData, setRequestData] = useState('')
     const [activeDM, setActiveDM] = useState(null)
+    const [repeater, setRepeater] = useState(0)
 
     useEffect(() => {
         setInterval(() => {
@@ -37,16 +38,15 @@ export default function Home() {
                 setChats(res.data.chats.reverse())
             })
         }
-        const dmInt = setInterval(() => {
-            if (activeDM !== null) {
-                axios.get(`/users/dm/${activeDM.friendId}`)
-                .then(res => {
-                    setChats(res.data.chats.reverse())
-                })
-            }
-        }, 2500);
-        return clearInterval(dmInt)
-    }, [activeDM])
+        if (activeDM !== null) {
+            console.log('updating Dms')
+            axios.get(`/users/dm/${activeDM.friendId}`)
+            .then(res => {
+                setChats(res.data.chats.reverse())
+            })
+        }
+        setTimeout(() => setRepeater(prevState=>prevState+1), 2500);
+    }, [repeater])
 
     function handleFriendRequest(e) {
         e.preventDefault()
